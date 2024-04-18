@@ -1,10 +1,10 @@
 import React from 'react';
 
-function BenchmarkTitle({ isVisible }) {
+function BenchmarkTitle() {
   return (
-    <div className={`title-container ${isVisible ? 'fade-in' : 'fade-out'}`}>
+    <div className={`title-container 'fade-in'}`}>
       <h1>Benchmark</h1>
-      <p>Explore performance benchmarks for different cryptographic curves.</p>
+      <p>Explore performance benchmarks for different cryptographic curves implemented in Kyber.</p>
     </div>
   );
 }

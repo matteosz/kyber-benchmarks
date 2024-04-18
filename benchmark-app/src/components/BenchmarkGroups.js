@@ -46,7 +46,6 @@ const BenchmarkGroups = () => {
     <div className="benchmark-chart-container">
       <h1>Groups Benchmark</h1>
       <p>
-        This is a benchmarking tool that displays the performance of different groups of operations.
         The benchmarks were run on a machine with the following specifications:
         <ul>
           <li>Processor: Intel Core i9-9900K</li>

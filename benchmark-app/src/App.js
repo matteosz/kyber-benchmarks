@@ -1,34 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import BenchmarkGroups from './components/BenchmarkGroups';
 import BenchmarkTitle from './components/BenchmarkTitle';
+import BenchmarkMenu from './components/BenchmarkMenu';
 
-function App() {
-  const [isTitleVisible, setIsTitleVisible] = useState(true);
+const App = () => {
+  const [type, setType] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setIsTitleVisible(false);
-      } else {
-        setIsTitleVisible(true);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
 
   return (
     <div className="App">
-      <BenchmarkTitle isVisible={false} />
-      <BenchmarkGroups/>
-      {/* Add the rest of your content here */}
+      {type === '' && <BenchmarkTitle />}
+      <BenchmarkMenu setFn={setType} isOpen={menuOpen} toggleMenu={toggleMenu} />
+      {type === 'groups' && <BenchmarkGroups />}
     </div>
   );
-}
+};
 
 export default App;
