@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/kyber-benchmarks/static/css/main.f2ed59a5.css",
+    "main.js": "/kyber-benchmarks/static/js/main.19f4946a.js",
+    "static/js/453.5166bd4c.chunk.js": "/kyber-benchmarks/static/js/453.5166bd4c.chunk.js",
+    "index.html": "/kyber-benchmarks/index.html",
+    "main.f2ed59a5.css.map": "/kyber-benchmarks/static/css/main.f2ed59a5.css.map",
+    "main.19f4946a.js.map": "/kyber-benchmarks/static/js/main.19f4946a.js.map",
+    "453.5166bd4c.chunk.js.map": "/kyber-benchmarks/static/js/453.5166bd4c.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f2ed59a5.css",
+    "static/js/main.19f4946a.js"
+  ]
+}
