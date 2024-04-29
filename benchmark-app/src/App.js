@@ -3,6 +3,7 @@ import './App.css';
 import BenchmarkGroups from './components/BenchmarkGroups';
 import BenchmarkTitle from './components/BenchmarkTitle';
 import BenchmarkMenu from './components/BenchmarkMenu';
+import BenchmarkSignatures from './components/BenchmarkSignatures';
 
 const App = () => {
   const [type, setType] = useState('');
@@ -17,6 +18,7 @@ const App = () => {
       {type === '' && <BenchmarkTitle />}
       <BenchmarkMenu setFn={setType} isOpen={menuOpen} toggleMenu={toggleMenu} />
       {type === 'groups' && <BenchmarkGroups />}
+      {type === 'sign' && <BenchmarkSignatures />}
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { Chart, registerables} from 'chart.js';
 import data from '../data/data.json';
 
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
+import { FormControl, InputLabel, Select, MenuItem} from '@mui/material';
 import './Benchmark.css';
 
 Chart.register(...registerables);
@@ -189,30 +190,140 @@ const BenchmarkDisplay = ({ selectedGroup }) => {
 const Comparison = ({ leftGroup, rightGroup, handleLeftGroupSelect, handleRightGroupSelect }) => {
   const groups = Object.keys(data.groups);
 
+  // Function to generate the benchmark comparison plots
+  const generateComparisonPlots = (category) => {
+    if (!leftGroup || !rightGroup) return null;
+
+    const benchmarksLeft = data.groups[leftGroup].benchmarks[category];
+    const benchmarksRight = data.groups[rightGroup].benchmarks[category];
+
+    const allOperations = [...new Set([...Object.keys(benchmarksLeft), ...Object.keys(benchmarksRight)])];
+    const colors = ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)']; // Colors for left and right groups
+
+    const chartDataTime = {
+      labels: allOperations,
+      datasets: [
+        {
+          label: leftGroup,
+          backgroundColor: colors[0],
+          borderColor: colors[0],
+          borderWidth: 1,
+          hoverBackgroundColor: colors[0],
+          hoverBorderColor: colors[0],
+          data: allOperations.map(operation => benchmarksLeft[operation]?.T / benchmarksLeft[operation]?.N || null)
+        },
+        {
+          label: rightGroup,
+          backgroundColor: colors[1],
+          borderColor: colors[1],
+          borderWidth: 1,
+          hoverBackgroundColor: colors[1],
+          hoverBorderColor: colors[1],
+          data: allOperations.map(operation => benchmarksRight[operation]?.T / benchmarksRight[operation]?.N || null)
+        }
+      ]
+    };
+
+    const chartDataMemory = {
+      labels: allOperations,
+      datasets: [
+        {
+          label: leftGroup,
+          backgroundColor: colors[0],
+          borderColor: colors[0],
+          borderWidth: 1,
+          hoverBackgroundColor: colors[0],
+          hoverBorderColor: colors[0],
+          data: allOperations.map(operation => benchmarksLeft[operation]?.MemBytes / benchmarksLeft[operation]?.N || null)
+        },
+        {
+          label: rightGroup,
+          backgroundColor: colors[1],
+          borderColor: colors[1],
+          borderWidth: 1,
+          hoverBackgroundColor: colors[1],
+          hoverBorderColor: colors[1],
+          data: allOperations.map(operation => benchmarksRight[operation]?.MemBytes / benchmarksRight[operation]?.N || null)
+        }
+      ]
+    };
+
+    const chartOptionsTime = {
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Time (ns/op)',
+          },
+        },
+      },
+    };
+    const chartOptionsMemory = {
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Memory (bytes/op)',
+          },
+        },
+      },
+    };
+
+    return (
+      <div className="comparison-chart">
+        <h3>{category.charAt(0).toUpperCase() + category.slice(1)}</h3>
+        <div className="chart-container">
+          <div className="chart">
+            <Bar data={chartDataTime} options={chartOptionsTime}/>
+          </div>
+          <div className="chart">
+            <Bar data={chartDataMemory} options={chartOptionsMemory}/>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="comparison">
       <div className="group-selection">
         <div className="left">
-          <select value={leftGroup} onChange={(e) => handleLeftGroupSelect(e.target.value)}>
-            <option value="">Select Left Group</option>
-            {groups.map((group, index) => (
-              <option key={index} value={group}>{group}</option>
-            ))}
-          </select>
-          {leftGroup && (
-            <BenchmarkDisplay selectedGroup={leftGroup}/>
-          )}
+          <FormControl variant="outlined" size="small" aria>
+            <InputLabel id="left-group-select-label">Select Left Group</InputLabel>
+            <Select
+              labelId="left-group-select-label"
+              id="left-group-select"
+              value={leftGroup}
+              onChange={(e) => handleLeftGroupSelect(e.target.value)}
+              label="Select Left Group"
+              style={{ width: '180px' }}
+            >
+              {groups.map((group, index) => (
+                <MenuItem key={index} value={group}>{group}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          {generateComparisonPlots('point')}
         </div>
         <div className="right">
-          <select value={rightGroup} onChange={(e) => handleRightGroupSelect(e.target.value)}>
-            <option value="">Select Right Group</option>
-            {groups.map((group, index) => (
-              <option key={index} value={group}>{group}</option>
-            ))}
-          </select>
-          {rightGroup && (
-            <BenchmarkDisplay selectedGroup={rightGroup}/>
-          )}
+          <FormControl variant="outlined" size="small">
+            <InputLabel id="right-group-select-label">Select Right Group</InputLabel>
+            <Select
+              labelId="right-group-select-label"
+              id="right-group-select"
+              value={rightGroup}
+              onChange={(e) => handleRightGroupSelect(e.target.value)}
+              label="Select Right Group"
+              style={{ width: '180px' }}
+            >
+              {groups.map((group, index) => (
+                <MenuItem key={index} value={group}>{group}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          {generateComparisonPlots('scalar')}
         </div>
       </div>
     </div>
@@ -290,43 +401,61 @@ const Ranking = () => {
   return (
     <div className="ranking">
       <div className="selectors">
-        <div>
-          <label htmlFor="category-select">Category:</label>
-          <select id="category-select" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
-            <option value="point">Point</option>
-            <option value="scalar">Scalar</option>
-          </select>
+        <div className="left">
+          <FormControl variant="outlined" size="small">
+            <InputLabel id="category-select-label">Category</InputLabel>
+            <Select
+              labelId="category-select-label"
+              id="category-select"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              label="Category"
+            >
+              <MenuItem value="point">Point</MenuItem>
+              <MenuItem value="scalar">Scalar</MenuItem>
+            </Select>
+          </FormControl>
         </div>
-        <div>
-          <label htmlFor="metric-select">Metric:</label>
-          <select id="metric-select" value={selectedMetric} onChange={(e) => setSelectedMetric(e.target.value)}>
-            <option value="t">Time (ns/op)</option>
-            <option value="m">Memory (bytes/op)</option>
-          </select>
+        <div className="right">
+          <FormControl variant="outlined" size="small">
+            <InputLabel id="metric-select-label">Metric</InputLabel>
+            <Select
+              labelId="metric-select-label"
+              id="metric-select"
+              value={selectedMetric}
+              onChange={(e) => setSelectedMetric(e.target.value)}
+              label="Metric"
+            >
+              <MenuItem value="t">Time (ns/op)</MenuItem>
+              <MenuItem value="m">Memory (bytes/op)</MenuItem>
+            </Select>
+          </FormControl>
         </div>
       </div>
-      <br></br>
-      <table>
-        <thead>
-          <tr>
-            {tableHeaders.map((header, index) => (
-              <th key={index} onClick={() => handleSort(header)}>
-                {header}
-                {sortBy === header && <span>{sortOrder === 'asc' ? '▲' : '▼'}</span>}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {sortedData.map((row, rowIndex) => (
-            <tr key={rowIndex}>
-              {tableHeaders.map((header, colIndex) => (
-                <td key={colIndex}>{colIndex === 0 ? row[header] : (Math.round(row[selectedCategory][header][selectedMetric] * 100) / 100).toFixed(2)}</td>
+      <br />
+      <div>
+        <table>
+          <thead>
+            <tr>
+              {tableHeaders.map((header, index) => (
+                <th key={index} onClick={() => handleSort(header)}>
+                  {header}
+                  {sortBy === header && <span>{sortOrder === 'asc' ? '▲' : '▼'}</span>}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sortedData.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                {tableHeaders.map((header, colIndex) => (
+                  <td key={colIndex}>{colIndex === 0 ? row[header] : (Math.round(row[selectedCategory][header][selectedMetric] * 100) / 100).toFixed(2)}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

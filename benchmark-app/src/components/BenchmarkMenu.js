@@ -21,8 +21,7 @@ const BenchmarkMenu = ({ setFn, isOpen, toggleMenu }) => {
       {isOpen && (
         <ul>
           <li onClick={() => clickMenuItem('groups')}>Groups</li>
-          <li onClick={() => clickMenuItem('curves')}>Curves</li>
-          <li onClick={() => clickMenuItem('hashes')}>Hashes</li>
+          <li onClick={() => clickMenuItem('sign')}>Signatures</li>
         </ul>
       )}
     </div>
